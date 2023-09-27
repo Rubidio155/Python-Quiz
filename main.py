@@ -3,17 +3,51 @@
 
 # Importamos los módulos necesarios
 # Let's import the necessary modules
+
 from tkinter import *
+import pandas as pd   # Hay que instalar pandas y openpyxl / pandas and openpyxl have to be installed
 
-# Definimos el diccionario con las preguntas y sus respuestas correspondientes
-# Let's define the dictionary with the questions and its answers
+# Leemos el documento plantilla de excel (Quiz-Template.xlsx) con las preguntas y respuestas deseadas
+# Let's read the excel document template (Quiz-Template.xlsx) with the desired questions and answers
 
-questions = {"2+3": ['2', '3', '5', '9'], "2-1": ['2', '1', '5'], "3+3": ['3', '6', '9', '7']}
+df = pd.read_excel('Quiz-Template.xlsx', sheet_name=0, skiprows=2)
 
-# Definimos la lista con las respuestas correctas
-# Let's define the list with the correct answers
+# Separamos las columnas de las preguntas, de las opciones y de las respuestas correctas en sus respectivas variables
+# Let's separate the questions, options and correct answers columns in their respective variables
 
-ans = ['5', '1', '6']
+questions_0 = df.iloc[:, 0]
+options_0 = df.iloc[:, 1]
+answers = df.iloc[:, 2]
+
+# Convertimos la columna con las opciones en una lista
+# Let's turn the column with the options into a list
+
+options_1 = options_0.values.tolist()
+
+# Definimos una lista en la que guardamos las listas de las distintas opciones para cada pregunta
+# Let's define a list in which we store the lists of the different options for each question
+
+options = []
+for option in options_1:
+	choices = option.split(" - ")
+	options.append(choices)
+
+# Convertimos la columna con las preguntas en una lista
+# Let's turn the column with the questions into a list
+
+questions_1 = questions_0.values.tolist()
+
+# Definimos un diccionario en el que guardamos las preguntas y sus respuestas correspondientes
+# Let's define a dictionary in which we store the questions and its answers
+
+questions = {}
+for element in questions_1:
+	questions[element] = options[questions_1.index(element)]
+
+# Convertimos la columna con las respuestas correctas en una lista
+# Let's turn the column with the correct answers into a list
+
+ans = answers.values.tolist()
 
 # Definimos una variable que registra la pregunta por la que se va
 # Let's define a variable that registers the current question
@@ -49,8 +83,8 @@ def next_question():
 		Label(f1, text=f"Pregunta : {c_question}", padx=15, font="calibre 12 normal").pack(anchor=NW)
 		# Imprimimos las opciones
 		# Let's print the options
-		for option in questions[c_question]:
-			Radiobutton(f1, text=option, variable=user_ans, value=option, padx=28).pack(anchor=NW)
+		for choice in questions[c_question]:
+			Radiobutton(f1, text=choice, variable=user_ans, value=choice, padx=28).pack(anchor=NW)
 		current_question += 1
 	else:
 		next_button.forget()
