@@ -1,5 +1,5 @@
 # Este proyecto genera un quiz o cuestionario de tipo test multi-respuesta
-# This project generates a multi-answer test quiz or questionnaire
+# This project generates a multiple choice quiz or questionnaire
 
 # Importamos los módulos necesarios
 # Let's import the necessary modules
@@ -50,10 +50,19 @@ for element in questions_1:
 
 ans = answers.values.tolist()
 
+# Creamos una unión entre las preguntas y sus respuestas correctas para poder ordenarlas aleatoriamente
+# Let's join the questions and its correct answers in order to shuffle them aleatorily
+
 question_list = list(questions.keys())
 temporal_zip = list(zip(question_list, ans))
 
+# Ordenamos las preguntas y sus respuestas correctas aleatoriamente
+# Let's shuffle aleatorily the questions and its correct answers
+
 random.shuffle(temporal_zip)
+
+# Separamos nuevamente las preguntas y sus respuestas correctas
+# Let's separate once again the questions and its correct answers
 
 question_list, ans = zip(*temporal_zip)
 question_list, ans = list(question_list), list(ans)
@@ -62,6 +71,9 @@ question_list, ans = list(question_list), list(ans)
 # Let's define a variable that registers the current question
 
 current_question = 0
+
+# Definimos una variable global que registra el numero de preguntas a contestar
+# Let's define a global variable that registers the number of questions to answer
 
 global questions_to_answer
 
@@ -105,9 +117,13 @@ def next_question():
 		next_button.forget()
 		check_ans()
 		clear_frame()
+		# Añadimos mensajes con el número de aciertos, fallos y preguntas en blanco
+		# Let's add messages with the number of correct, wrong and blank answers
 		output = f"{user_score.get()} de {questions_to_answer} preguntas correctas"
 		output2 = f"{len(mistakes)} fallos"
 		output3 = f"{blank} preguntas en blanco"
+		# Añadimos una nota sobre 10 restando una correcta por cada 3 fallos
+		# Let's add a grade out of 10 substracting a correct answer for every three wrong
 		grade = f"Nota: {round(((user_score.get()-len(mistakes)*0.33)/questions_to_answer)*10,2)}"
 		Label(f1, text=output, font="calibre 25 bold").pack()
 		Label(f1, text=output2, font="calibre 20 bold").pack()
@@ -116,8 +132,8 @@ def next_question():
 		Label(f1, text="Gracias por participar", font="calibre 18 bold").pack()
 
 
-# Definimos la función que comprueba si las respuestas son correctas
-# Let's define the function that checks if the answers are correct
+# Definimos la función que comprueba si las respuestas son correctas, fallos o se han dejado en blanco
+# Let's define the function that checks if the answers are correct, wrong or blank
 
 mistakes = {}
 blank = -1
@@ -141,6 +157,8 @@ def clear_frame():
 	for widget in f1.winfo_children():
 		widget.destroy()
 
+# Definimos la función que permite seleccionar el número de preguntas
+# Let's define the function that allows the selection of the number of questions
 
 def selection():
 	global questions_to_answer
