@@ -5,13 +5,14 @@
 # Let's import the necessary modules
 
 from tkinter import *
+import tkinter.scrolledtext as st
 import random
 import pandas as pd   # Hay que instalar pandas y openpyxl / pandas and openpyxl have to be installed
 
 # Leemos el documento plantilla de excel (Quiz-Template.xlsx) con las preguntas y respuestas deseadas
 # Let's read the excel document template (Quiz-Template.xlsx) with the desired questions and answers
 
-df = pd.read_excel('Quiz-Template.xlsx', sheet_name=0, skiprows=2)
+df = pd.read_excel('Quiz-Template-Sara.xlsx', sheet_name=0, skiprows=2)
 
 # Separamos las columnas de las preguntas, de las opciones y de las respuestas correctas en sus respectivas variables
 # Let's separate the questions, options and correct answers columns in their respective variables
@@ -51,13 +52,13 @@ for element in questions_1:
 ans = answers.values.tolist()
 
 # Creamos una unión entre las preguntas y sus respuestas correctas para poder ordenarlas aleatoriamente
-# Let's join the questions and its correct answers in order to shuffle them aleatorily
+# Let's join the questions and its correct answers in order to shuffle them arbitrarily
 
 question_list = list(questions.keys())
 temporal_zip = list(zip(question_list, ans))
 
 # Ordenamos las preguntas y sus respuestas correctas aleatoriamente
-# Let's shuffle aleatorily the questions and its correct answers
+# Let's shuffle arbitrarily the questions and its correct answers
 
 random.shuffle(temporal_zip)
 
@@ -123,17 +124,23 @@ def next_question():
 		output2 = f"{len(mistakes)} fallos"
 		output3 = f"{blank} preguntas en blanco"
 		# Añadimos una nota sobre 10 restando una correcta por cada 3 fallos
-		# Let's add a grade out of 10 substracting a correct answer for every three wrong
+		# Let's add a grade out of 10 subtracting a correct answer for every three wrong
 		grade = f"Nota: {round(((user_score.get()-len(mistakes)*0.33)/questions_to_answer)*10,2)}"
 		Label(f1, text=output, font="calibre 25 bold").pack()
 		Label(f1, text=output2, font="calibre 20 bold").pack()
 		Label(f1, text=output3, font="calibre 20 bold").pack()
 		Label(f1, text=grade, font="calibre 18 bold").pack()
 		Label(f1, text="Gracias por participar", font="calibre 18 bold").pack()
-
+		# Añadimos un botón para poder ver los fallos cometidos
+		# Let's add a button to see the mistakes made
+		errors = Button(root, text="Errors")
+		errors.place(x=650, y=350)
+		errors.pack(pady=20)
+		errors.config(command=show_errors)
 
 # Definimos la función que comprueba si las respuestas son correctas, fallos o se han dejado en blanco
 # Let's define the function that checks if the answers are correct, wrong or blank
+
 
 mistakes = {}
 blank = -1
@@ -160,6 +167,7 @@ def clear_frame():
 # Definimos la función que permite seleccionar el número de preguntas
 # Let's define the function that allows the selection of the number of questions
 
+
 def selection():
 	global questions_to_answer
 	if value_inside1.get() == "Todas":
@@ -170,9 +178,30 @@ def selection():
 		questions_to_answer = int(value_inside1.get())
 	return questions_to_answer
 
+# Definimos la función que permite mostrar los errores cometidos
+# Let's define the function that allows the program to show the mistakes made
+
+
+def show_errors():
+	clear_frame()
+	h = Scrollbar(f1, orient="horizontal")
+	h.pack(side=BOTTOM, fill="x")
+	text_area = st.ScrolledText(f1, width=1500, height=400, font=("calibre", 12), wrap=NONE, xscrollcommand=h.set)
+	text_area.pack()
+	line = 1
+	for mistake in mistakes.keys():
+		text_area.insert(INSERT, f"{question_list[mistake]}")
+		text_area.insert(INSERT, f" {mistakes[mistake]} \n")
+		text_area.tag_add("check", str(line)+"."+str(len(question_list[mistake])+1), str(line)+".end")
+		text_area.tag_config("check", foreground="green")
+		text_area.insert(INSERT, "\n")
+		line += 2
+	text_area.configure(state='disabled')
+	h.config(command=text_area.xview)
 
 # Función principal:
 # Main function
+
 
 if __name__ == "__main__":
 	root = Tk()
